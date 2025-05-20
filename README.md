@@ -7,6 +7,12 @@ TODO:
 - blog draft in md
 - blog post
 
+## How to activate certora environment
+```
+source .venv/bin/activate
+certoraRun --version
+```
+
 **Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
 
 Foundry consists of:
