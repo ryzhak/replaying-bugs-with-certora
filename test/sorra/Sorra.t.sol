@@ -72,5 +72,7 @@ contract SorraTest is Test {
         console2.log("User balance:", rewardToken.balanceOf(user));
         console2.log("User2 balance:", rewardToken.balanceOf(user2));
         console2.log("SorraStaking balance:", rewardToken.balanceOf(address(sorraStaking)));
+        console2.log("User pending rewards:", sorraStaking.getPendingRewards(user));
+        console2.log("User2 pending rewards:", sorraStaking.getPendingRewards(user2));
     }
 }
