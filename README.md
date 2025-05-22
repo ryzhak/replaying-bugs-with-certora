@@ -3,7 +3,7 @@
 TODO:
 + normal flow
 + buggy flow
-- certora rule
++ certora rule
 - blog draft in md
 - blog post
 

@@ -4,11 +4,21 @@ rule withdrawIntegrity() {
     env e;
     uint256 amount;
 
-    require rewardToken.balanceOf(e, e.msg.sender) == 0;
-    require rewardToken.balanceOf(e, currentContract) == currentContract.positions[e.msg.sender].totalAmount;
+    // user's balance < 100 mln
+    require rewardToken.balanceOf(e, e.msg.sender) < 100000000000000000000000000;
+    // withdraw amount < 100 mln
+    require amount < 100000000000000000000000000;
+    // users positions < 100 mln
+    require rewardToken.balanceOf(e, currentContract) < 100000000000000000000000000;
+
+    // no vault extensions
     require currentContract.vaultExtension(e) == 0;
-    require getPendingRewards(e, e.msg.sender) > 1000000000000000000;
-    require amount > 1000000000000000000;
+    // there already exists some deposit
+    require rewardToken.balanceOf(e, currentContract) == currentContract.positions[e.msg.sender].totalAmount;
+    // pending rewards exist (i.e. some time passed)
+    require getPendingRewards(e, e.msg.sender) > 1;
+    // current contract can't be a sender
+    require e.msg.sender != currentContract;
 
     uint256 contractBalanceBefore = rewardToken.balanceOf(e, currentContract);
     uint256 userBalanceBefore = rewardToken.balanceOf(e, e.msg.sender);
@@ -22,5 +32,5 @@ rule withdrawIntegrity() {
     uint256 pendingRewardsAfter = getPendingRewards(e, e.msg.sender);
     uint256 userDepositedAmountAfter = currentContract.positions[e.msg.sender].totalAmount;
 
-    assert userBalanceAfter + pendingRewardsAfter <= userDepositedAmountBefore + pendingRewardsBefore, "User can not withdraw more than expected";
+    assert (amount + pendingRewardsBefore) == (userBalanceAfter - userBalanceBefore + pendingRewardsAfter), "User can not withdraw more than expected";
 }

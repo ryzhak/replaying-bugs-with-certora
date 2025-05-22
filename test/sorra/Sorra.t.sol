@@ -67,12 +67,49 @@ contract SorraTest is Test {
         debug();
     }
 
+    function testCertoraLike() public {
+        uint amount = 100 ether;
+
+        // user stakes for tier 0 (14 days)
+        vm.prank(user);
+        sorraStaking.deposit(amount, 0);
+
+        // user2 stakes for tier 0 (14 days)
+        vm.prank(user2);
+        sorraStaking.deposit(amount, 0);
+
+        skip(14 days + 1);
+
+        vm.prank(user2);
+        sorraStaking.withdraw(amount / 2);
+
+        debug();
+
+        uint256 user2BalanceBefore = rewardToken.balanceOf(user2);
+        uint256 pendingRewardsBefore = sorraStaking.getPendingRewards(user2);
+
+        uint256 withdrawAmount = amount / 4;
+
+        vm.prank(user2);
+        sorraStaking.withdraw(withdrawAmount);    
+
+        uint256 user2BalanceAfter = rewardToken.balanceOf(user2);
+        uint256 pendingRewardsAfter = sorraStaking.getPendingRewards(user2);
+
+        debug();
+
+        console2.log("===assert===");
+        console2.log("part1         :", withdrawAmount + pendingRewardsBefore);
+        console2.log("part2         :", user2BalanceAfter - user2BalanceBefore + pendingRewardsAfter);
+        // assertTrue((withdrawAmount + pendingRewardsBefore) == (user2BalanceAfter - user2BalanceBefore + pendingRewardsAfter));
+    }
+
     function debug() public {
         console2.log("===debug===");
-        console2.log("User balance:", rewardToken.balanceOf(user));
-        console2.log("User2 balance:", rewardToken.balanceOf(user2));
-        console2.log("SorraStaking balance:", rewardToken.balanceOf(address(sorraStaking)));
-        console2.log("User pending rewards:", sorraStaking.getPendingRewards(user));
+        console2.log("User balance         :", rewardToken.balanceOf(user));
+        console2.log("User2 balance        :", rewardToken.balanceOf(user2));
+        console2.log("SorraStaking balance :", rewardToken.balanceOf(address(sorraStaking)));
+        console2.log("User pending rewards :", sorraStaking.getPendingRewards(user));
         console2.log("User2 pending rewards:", sorraStaking.getPendingRewards(user2));
     }
 }
